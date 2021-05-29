@@ -11,7 +11,7 @@ contract PriceConsumerV3XAU {
      * Address: 0xc8fb5684f2707C82f28595dEaC017Bfdf44EE9c5
      */
 
-    constructor() public {
+    constructor() {
         priceFeed_xau_usd = AggregatorV3Interface(
             0xc8fb5684f2707C82f28595dEaC017Bfdf44EE9c5
         );

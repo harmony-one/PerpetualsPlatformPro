@@ -33,9 +33,8 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         address token_addr,
         uint256 _vUSDCreserve,
         uint256 _vXAUreserve,
-        uint256 _totalLiquidity,
         uint256 _leverage
-    ) public PriceConsumerV3XAU() {
+    ) PriceConsumerV3XAU() {
         USDC = IERC20(token_addr);
         vUSDCreserve = _vUSDCreserve;
         vXAUreserve = _vXAUreserve;
@@ -168,7 +167,7 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
 
     /*********************** funding Rate *****************************/
 
-    function getFundingRate() public returns (uint256) {
+    function getFundingRate() public view returns (uint256) {
         uint256 decimals = 10**8;
         uint256 priceIndex = uint256(getXAUPrice());
         uint256 pricePerpetual = (vUSDCreserve * decimals) / vXAUreserve;
