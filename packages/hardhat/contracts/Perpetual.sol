@@ -6,8 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./PriceConsumerV3.sol";
 
+import "hardhat/console.sol";
+
 contract Perpetual is Ownable, PriceConsumerV3XAU {
-    IERC20 USDC;
+    IERC20 public USDC;
 
     uint256 public vUSDCreserve;
     uint256 public vXAUreserve;
@@ -43,7 +45,7 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
     }
 
     function deposit(uint256 amount) public returns (bool) {
-        bool txstatus = USDC.transfer(address(this), amount);
+        bool txstatus = USDC.transferFrom(msg.sender, address(this), amount);
         require(txstatus, "Transaction failed");
         USDCvault[msg.sender] += amount;
         emit Deposit(amount, msg.sender);
