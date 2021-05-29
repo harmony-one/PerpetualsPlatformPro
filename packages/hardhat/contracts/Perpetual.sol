@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.4;
 
-//import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./PriceConsumerV3.sol";
 
 contract Perpetual is Ownable, PriceConsumerV3XAU {
-    //using SafeMath for uint256;
     IERC20 USDC;
 
     uint256 public vUSDCreserve;
@@ -46,7 +44,7 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
     }
 
     function deposit(uint256 amount) public returns (bool) {
-        bool txstatus = token.transfer(address(this), amount);
+        bool txstatus = USDC.transfer(address(this), amount);
         require(txstatus, "Transaction failed");
         USDCvault[msg.sender] += amount;
         emit Deposit(amount, msg.sender);
@@ -59,7 +57,7 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
             "Can not require more than in balance"
         );
         USDCvault[msg.sender] -= amount;
-        bool txstatus = token.transfer(msg.sender, amount);
+        bool txstatus = USDC.transfer(msg.sender, amount);
         require(txstatus, "Transaction failed");
         emit Withdraw(amount, msg.sender);
         return txstatus;
@@ -138,7 +136,7 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         USDCvault[msg.sender] -= amount;
 
         uint256 vXAUsold = _burnVUSDC(vUSDCnotional);
-        vXAU[msg.sender] += vXAUsold;
+        vXAUshort[msg.sender] += vXAUsold;
 
         emit ShortXAUminted(vXAUsold, msg.sender);
         return vXAUsold;
@@ -167,19 +165,17 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         emit ShortXAUredeemed(vUSDCbought, msg.sender);
         return vUSDCbought;
     }
+
     /*********************** funding Rate *****************************/
 
-​	
-    function getFundingRate() returns (uint256) {
-        uint decimals = 10**8;
-        priceIndex = getXAUPrice();
-        pricePerpetual = vUSDCreserve*decimals/vXAUreserve;
+    function getFundingRate() public returns (uint256) {
+        uint256 decimals = 10**8;
+        uint256 priceIndex = uint256(getXAUPrice());
+        uint256 pricePerpetual = (vUSDCreserve * decimals) / vXAUreserve;
 
-        uint fundingRate = pricePerpetual - priceIndex
-
+        uint256 fundingRate = pricePerpetual - priceIndex;
+        return fundingRate;
     }
-​	
-
 
     /*********************** helper **********************************/
 

@@ -4,7 +4,7 @@ pragma solidity 0.8.4;
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract PriceConsumerV3XAU {
-    AggregatorV3Interface internal priceFeed_dai_usd;
+    AggregatorV3Interface internal priceFeed_xau_usd;
 
     /* Network: Kovan
      * Aggregator: XAU/USD
@@ -29,6 +29,6 @@ contract PriceConsumerV3XAU {
     }
 }
 
-contract DerivedPriceOracle is PriceConsumerV3DAIEUR {
-    constructor() PriceConsumerV3DAIEUR() {}
+contract DerivedPriceOracle is PriceConsumerV3XAU {
+    constructor() PriceConsumerV3XAU() {}
 }
