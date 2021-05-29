@@ -5,7 +5,9 @@ pragma solidity 0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Perpetual is Ownable {
+import "./PriceConsumerV3.sol";
+
+contract Perpetual is Ownable, PriceConsumerV3XAU {
     //using SafeMath for uint256;
     IERC20 USDC;
 
@@ -35,7 +37,7 @@ contract Perpetual is Ownable {
         uint256 _vXAUreserve,
         uint256 _totalLiquidity,
         uint256 _leverage
-    ) public {
+    ) public PriceConsumerV3XAU() {
         USDC = IERC20(token_addr);
         vUSDCreserve = _vUSDCreserve;
         vXAUreserve = _vXAUreserve;
@@ -105,12 +107,11 @@ contract Perpetual is Ownable {
     }
 
     function RedeemLongXAU(uint256 amount) public returns (uint256) {
-        uint256 vXAUlongOwned = vXAUlong[msg.sender];
-        require(vXAUlongOwned >= amount, "USDC balances are too low");
-        vXAUlong[msg.sender] -= vXAUlongOwned;
+        require(vXAUlong[msg.sender] >= amount, "USDC balances are too low");
+        vXAUlong[msg.sender] -= amount;
 
         uint256 vUSDCbought = _mintVXAU(amount);
-        USDCvault[msg.sender] += vUSDCbought;
+        USDCvault[msg.sender] += vUSDCbought / leverage;
 
         emit LongXAUredeemed(vUSDCbought, msg.sender);
         return vUSDCbought;
@@ -118,7 +119,7 @@ contract Perpetual is Ownable {
 
     /*********************** SHORT POSITION **********************************/
 
-    // short position
+    // open short position
 
     function _burnVUSDC(uint256 amount) internal returns (uint256) {
         // estimate trades
@@ -136,12 +137,49 @@ contract Perpetual is Ownable {
         uint256 vUSDCnotional = amount * leverage;
         USDCvault[msg.sender] -= amount;
 
-        uint256 vXAUsold = _deriveUSDC(vUSDCnotional);
+        uint256 vXAUsold = _burnVUSDC(vUSDCnotional);
         vXAU[msg.sender] += vXAUsold;
 
         emit ShortXAUminted(vXAUsold, msg.sender);
         return vXAUsold;
     }
+
+    // close short position
+
+    function _burnVXAU(uint256 amount) internal returns (uint256) {
+        // estimate trades
+        uint256 vXAUreserveNew = vXAUreserve - amount;
+        uint256 vUSDCreserveNew = totalLiquidity / vXAUreserveNew; // x = k / y
+        uint256 buy = vUSDCreserveNew - vXAUreserveNew; // vUSDC put back into pool
+
+        _updateBalances(vUSDCreserveNew, vXAUreserveNew);
+
+        return buy;
+    }
+
+    function RedeemShortXAU(uint256 amount) public returns (uint256) {
+        require(vXAUshort[msg.sender] >= amount, "USDC balances are too low");
+        vXAUshort[msg.sender] -= amount;
+
+        uint256 vUSDCbought = _burnVXAU(amount);
+        USDCvault[msg.sender] += vUSDCbought / leverage;
+
+        emit ShortXAUredeemed(vUSDCbought, msg.sender);
+        return vUSDCbought;
+    }
+    /*********************** funding Rate *****************************/
+
+​	
+    function getFundingRate() returns (uint256) {
+        uint decimals = 10**8;
+        priceIndex = getXAUPrice();
+        pricePerpetual = vUSDCreserve*decimals/vXAUreserve;
+
+        uint fundingRate = pricePerpetual - priceIndex
+
+    }
+​	
+
 
     /*********************** helper **********************************/
 
