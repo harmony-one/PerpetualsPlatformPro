@@ -11,6 +11,26 @@ const main = async () => {
 
   const yourContract = await deploy("YourContract") // <-- add in constructor args like line 19 vvvv
 
+  /************* DEPLOY CONTRACTS ******************/
+
+  // mock usdc
+  const supply = utils.parseEther("1000000"); // 1 mio. token
+  const usdc = await deploy("USDC",[supply]);
+
+  // perpetual contract
+  const vUSDreserve = utils.parseEther("1000000"); 
+  const vXAUreserve = utils.parseEther("55"); 
+  const investAmount = utils.parseEther("100")
+  const leverage = 5;
+  const perpetual = await deploy("Perpetual", [usdc.address, vUSDreserve, vXAUreserve, leverage] );
+
+  // approve spending
+  const deployerWallet = ethers.provider.getSigner()
+  await usdc.approve(perpetual.address, investAmount);
+
+
+  // const smartContractWallet = await deploy("SmartContractWallet",[exampleToken.address,examplePriceOracle.address])
+
   //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   //const secondContract = await deploy("SecondContract")
 
