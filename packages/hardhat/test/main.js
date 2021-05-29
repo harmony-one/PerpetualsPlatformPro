@@ -6,9 +6,9 @@ const { utils } = require("ethers");
 describe("Perpetual Protocol", function () {
 
   // test data. Use BigNumber to avoid overflow
-  const supply = utils.parseEther("10000"); 
-  const vUSDreserve = utils.parseEther("1000000"); 
-  const vXAUreserve = utils.parseEther("10000"); 
+  const supply = utils.parseEther("100000000000000000000"); 
+  const vUSDreserve = utils.parseEther("100000"); 
+  const vXAUreserve = utils.parseEther("55"); 
   const investAmount = utils.parseEther("100")
   const leverage = 5;
 
@@ -26,7 +26,7 @@ describe("Perpetual Protocol", function () {
     const Perpetual = await ethers.getContractFactory("Perpetual");
     perpetual = await Perpetual.deploy(usdc.address, vUSDreserve, vXAUreserve, leverage );
 
-
+    console.log( "total liquidity is", (await perpetual.totalLiquidity()).toString());
   });
 
   describe("Can be deployed", function () {
@@ -73,9 +73,9 @@ describe("Perpetual Protocol", function () {
       await usdc.connect(owner).approve(perpetual.address, investAmount);
       await perpetual.deposit(investAmount);
 
-      /*await expect(perpetual.MintLongXAU(investAmount))
+      await expect(perpetual.MintLongXAU(investAmount))
       .to.emit(perpetual, 'LongXAUminted')
-      .withArgs(utils.parseEther("49.75"), owner.address);*/
+      .withArgs(utils.parseEther("0.273631840796021"), owner.address);
 
     });
     it("Should sell vXAU", async function () {
