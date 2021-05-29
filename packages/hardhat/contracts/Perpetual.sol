@@ -11,15 +11,28 @@ import "hardhat/console.sol";
 contract Perpetual is Ownable, PriceConsumerV3XAU {
     IERC20 public USDC;
 
+    // state
+
     uint256 public vUSDCreserve;
     uint256 public vXAUreserve;
     uint256 public totalLiquidity;
     uint256 public leverage;
 
     mapping(address => uint256) public USDCvault;
+
+    address[] public vXAUlongHolders;
     mapping(address => uint256) public vXAUlong;
+
+    address[] public vXAUshortHolders;
     mapping(address => uint256) public vXAUshort;
 
+    struct Funding {
+        bool isPositive;
+        uint256 rate;
+    }
+    Funding public funding;
+
+    // events
     event Deposit(uint256, address indexed);
     event Withdraw(uint256, address indexed);
 
@@ -89,6 +102,9 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         vXAUlong[msg.sender] += vXAUbought;
 
         emit LongXAUminted(vXAUbought, msg.sender);
+
+        vXAUlongHolders.push(msg.sender);
+
         return vXAUbought;
     }
 
@@ -140,6 +156,9 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         vXAUshort[msg.sender] += vXAUsold;
 
         emit ShortXAUminted(vXAUsold, msg.sender);
+
+        vXAUshortHolders.push(msg.sender);
+
         return vXAUsold;
     }
 
@@ -168,16 +187,74 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
     }
 
     /*********************** funding Rate *****************************/
-
-    function getFundingRate() public view returns (uint256) {
+    // calculate global funding rate
+    /*
+    function updateFundingRate() public onlyOwner {
         uint256 decimals = 10**8;
         uint256 priceIndex = uint256(getXAUPrice());
         uint256 pricePerpetual = (vUSDCreserve * decimals) / vXAUreserve;
 
-        uint256 fundingRate = pricePerpetual - priceIndex;
-        return fundingRate;
+        if (priceIndex >= pricePerpetual) {
+            funding.isPositive = true;
+            funding.rate =
+                ((priceIndex - pricePerpetual) * decimals) /
+                (priceIndex * 24);
+        } else {
+            funding.isPositive = false;
+            funding.rate =
+                ((pricePerpetual - priceIndex) * decimals) /
+                (priceIndex * 24);
+        }
     }
 
+    function _loop_throug_array(
+        uint256 _fundingRate,
+        bool _isPositive,
+        address[] memory holders,
+        mapping(address => uint256) memory balances
+    ) internal {
+        uint256 decimals = 10**8;
+
+        for (uint256 i = 0; i < holders.length; i++) {
+            if (_isPositive) {
+                balances[holders[i]] +=
+                    (balances[holders[i]] * _fundingRate) /
+                    decimals;
+            } else {
+                balances[holders[i]] -=
+                    (balances[holders[i]] * _fundingRate) /
+                    decimals;
+            }
+        }
+    }
+
+    function _applyRateToLongs(uint256 _fundingRate, bool _isPositive)
+        internal
+    {
+        address[] memory longHolders = vXAUlongHolders;
+        mapping(address => uint256) memory longBalances = vXAUlong;
+        _loop_throug_array(
+            _fundingRate,
+            _isPositive,
+            longHolders,
+            longBalances
+        );
+    }
+
+    function _applyRateToShorts(uint256 _fundingRate, uint256 _isPositive)
+        internal
+    {
+        /*address[] public vXAUshortHolders;
+        mapping(address => uint256) public vXAUshort;
+    }
+
+    // apply funding rate to balances in loop (better: create global constant)
+    function applyFundingRate() public view onlyOwner {
+        Funding memory fundingPayments = funding;
+        _applyRateToLongs(fundingPayments.rate, fundingPayments.isPositive);
+        _applyRateToShorts(fundingPayments.rate, fundingPayments.isPositive);
+    }
+    */
     /*********************** helper **********************************/
 
     function _updateBalances(uint256 vUSDCreserveNew, uint256 vXAUreserveNew)

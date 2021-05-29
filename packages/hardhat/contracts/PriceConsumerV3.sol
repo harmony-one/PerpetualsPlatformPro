@@ -21,11 +21,14 @@ contract PriceConsumerV3XAU {
      * Returns the latest price
      */
     function getXAUPrice() public view returns (int256) {
-        (, int256 price, , uint256 timeStamp, ) =
+        /*(, int256 price, , uint256 timeStamp, ) =
             priceFeed_xau_usd.latestRoundData();
         // If the round is not complete yet, timestamp is 0
         require(timeStamp > 0, "Round not complete");
         return price;
+        */
+
+        return 1900 * 10**8;
     }
 }
 

@@ -26,7 +26,6 @@ describe("Perpetual Protocol", function () {
     const Perpetual = await ethers.getContractFactory("Perpetual");
     perpetual = await Perpetual.deploy(usdc.address, vUSDreserve, vXAUreserve, leverage );
 
-    console.log( "total liquidity is", (await perpetual.totalLiquidity()).toString());
   });
 
   describe("Can be deployed", function () {
@@ -75,7 +74,7 @@ describe("Perpetual Protocol", function () {
 
       await expect(perpetual.MintLongXAU(investAmount))
       .to.emit(perpetual, 'LongXAUminted')
-      .withArgs(utils.parseEther("0.273631840796021"), owner.address);
+      .withArgs(utils.parseEther("0.273631840796019901"), owner.address);
 
     });
     it("Should sell vXAU", async function () {
@@ -93,4 +92,14 @@ describe("Perpetual Protocol", function () {
     });
 
   });
+  /*
+  describe("Can trade calculate funding payments", function () {
+    it("Should calculate funding rate", async function () {
+      await perpetual.updateFundingRate();
+      const funding = await perpetual.funding();
+      expect(funding.rate).to.be.equal(utils.parseUnits("0.00179425", 8));
+      expect(funding.isPositive).to.be.true;
+    });
+  });
+  */
 });        
