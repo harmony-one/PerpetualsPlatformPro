@@ -281,4 +281,12 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
     function getvXAUshort(address _address) public view returns (uint256) {
         return vXAUshort[_address];
     }
+
+    function getvUSDCreserve() public view returns (uint256) {
+        return vUSDCreserve;
+    }
+
+    function getvXAUreserve() public view returns (uint256) {
+        return vXAUreserve;
+    }
 }
