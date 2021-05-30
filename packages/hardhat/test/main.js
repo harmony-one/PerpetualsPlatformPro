@@ -90,7 +90,10 @@ describe("Perpetual Protocol", function () {
       .withArgs(utils.parseEther("500"), owner.address);
 
     });
-
+    it("Should sell vXAU", async function () {
+      price = await perpetual.getPrice();
+      console.log("Current price is", utils.formatEther(price));
+    });
   });
   /*
   describe("Can trade calculate funding payments", function () {
