@@ -44,7 +44,7 @@ import { ExampleUI, Hints, Subgraph } from "./views";
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const targetNetwork = NETWORKS.kovan; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -322,7 +322,7 @@ function App(props) {
               ExampleUI
             </Link>
           </Menu.Item>
-          <Menu.Item key="/mainnetdai">
+          {/* <Menu.Item key="/mainnetdai">
             <Link
               onClick={() => {
                 setRoute("/mainnetdai");
@@ -331,7 +331,7 @@ function App(props) {
             >
               Mainnet DAI
             </Link>
-          </Menu.Item>
+          </Menu.Item> */}
           <Menu.Item key="/subgraph">
             <Link
               onClick={() => {
