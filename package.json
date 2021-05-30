@@ -60,5 +60,8 @@
       "**/hardhat",
       "**/hardhat/**"
     ]
+  },
+  "devDependencies": {
+    "hardhat": "^2.3.0"
   }
 }
