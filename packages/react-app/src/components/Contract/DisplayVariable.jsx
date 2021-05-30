@@ -4,7 +4,13 @@ import { Col, Divider, Row } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import tryToDisplay from "./utils";
 
-const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, triggerRefresh }) => {
+const DisplayVariable = ({
+  contractFunction,
+  functionInfo,
+  refreshRequired,
+  triggerRefresh,
+  contractFunctionName = "",
+}) => {
   const [variable, setVariable] = useState("");
 
   const refresh = useCallback(async () => {
@@ -33,7 +39,7 @@ const DisplayVariable = ({ contractFunction, functionInfo, refreshRequired, trig
             fontSize: 24,
           }}
         >
-          {functionInfo.name}
+          {contractFunctionName? contractFunctionName: functionInfo.name}
         </Col>
         <Col span={14}>
           <h2>{tryToDisplay(variable)}</h2>

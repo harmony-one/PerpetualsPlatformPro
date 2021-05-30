@@ -18,6 +18,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
   const tx = Transactor(provider, gasPrice);
 
   let inputIndex = 0;
+  console.log(" functionInfo ", functionInfo);
   const inputs = functionInfo.inputs.map(input => {
     const key = functionInfo.name + "_" + input.name + "_" + input.type + "_" + inputIndex++;
 
@@ -97,7 +98,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
       <div style={{ margin: 2 }} key={key}>
         <Input
           size="large"
-          placeholder={input.name ? input.type + " " + input.name : input.type}
+          // placeholder={input.name ? input.type + " " + input.name : input.type}
           autoComplete="off"
           value={form[key]}
           name={key}
@@ -194,6 +195,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
                 return value;
               });
 
+              console.log("Sending request :", ...args);
               let result;
               if (functionInfo.stateMutability === "view" || functionInfo.stateMutability === "pure") {
                 const returned = await contractFunction(...args);
@@ -216,7 +218,7 @@ export default function FunctionForm({ contractFunction, functionInfo, provider,
               triggerRefresh(true);
             }}
           >
-            {buttonIcon}
+            {/* {buttonIcon} */}
           </div>
         }
       />

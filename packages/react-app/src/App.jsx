@@ -44,7 +44,7 @@ import { ExampleUI, Hints, Subgraph } from "./views";
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS.kovan; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const targetNetwork = NETWORKS.rinkeby; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
@@ -146,10 +146,10 @@ function App(props) {
   ]);
 
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "YourContract", "purpose");
+  const purpose = useContractReader(readContracts, "Perpetual", "purpose");
 
   // 📟 Listen for broadcast events
-  const setPurposeEvents = useEventListener(readContracts, "YourContract", "SetPurpose", localProvider, 1);
+  const setPurposeEvents = useEventListener(readContracts, "Perpetual", "SetPurpose", localProvider, 1);
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -299,10 +299,10 @@ function App(props) {
               }}
               to="/"
             >
-              YourContract
+              Perpetual Contract
             </Link>
           </Menu.Item>
-          <Menu.Item key="/hints">
+          {/* <Menu.Item key="/hints">
             <Link
               onClick={() => {
                 setRoute("/hints");
@@ -311,7 +311,7 @@ function App(props) {
             >
               Hints
             </Link>
-          </Menu.Item>
+          </Menu.Item> */}
           <Menu.Item key="/exampleui">
             <Link
               onClick={() => {
@@ -319,7 +319,7 @@ function App(props) {
               }}
               to="/exampleui"
             >
-              ExampleUI
+              Deposit USDC
             </Link>
           </Menu.Item>
           {/* <Menu.Item key="/mainnetdai">
@@ -332,7 +332,7 @@ function App(props) {
               Mainnet DAI
             </Link>
           </Menu.Item> */}
-          <Menu.Item key="/subgraph">
+          {/* <Menu.Item key="/subgraph">
             <Link
               onClick={() => {
                 setRoute("/subgraph");
@@ -341,7 +341,7 @@ function App(props) {
             >
               Subgraph
             </Link>
-          </Menu.Item>
+          </Menu.Item> */}
         </Menu>
 
         <Switch>
@@ -353,9 +353,12 @@ function App(props) {
             */}
 
             <Contract
-              name="YourContract"
+              name="Perpetual"
               signer={userProvider.getSigner()}
               provider={localProvider}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
               address={address}
               blockExplorer={blockExplorer}
             />
