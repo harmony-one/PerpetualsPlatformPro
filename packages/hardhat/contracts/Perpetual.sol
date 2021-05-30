@@ -186,6 +186,12 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         return vUSDCbought;
     }
 
+    /*********************** getter function *****************************/
+
+    function getPrice() public view returns (uint256) {
+        return (vUSDCreserve * 10**18) / vXAUreserve;
+    }
+
     /*********************** funding Rate *****************************/
     // calculate global funding rate
     /*
