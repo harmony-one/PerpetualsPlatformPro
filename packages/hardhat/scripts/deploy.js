@@ -14,13 +14,13 @@ const main = async () => {
   /************* DEPLOY CONTRACTS ******************/
 
   // mock usdc
-  const supply = utils.parseEther("1000000"); // 1 mio. token
+  const supply = utils.parseEther("1000000"); // 1 mio => (1 mio * 10 ^18)
   const usdc = await deploy("USDC",[supply]);
 
   // perpetual contract
   const vUSDreserve = utils.parseEther("1000000"); 
   const vXAUreserve = utils.parseEther("55"); 
-  const investAmount = utils.parseEther("100")
+  const investAmount = utils.parseEther("1000000")
   const leverage = 5;
   const perpetual = await deploy("Perpetual", [usdc.address, vUSDreserve, vXAUreserve, leverage] );
 
