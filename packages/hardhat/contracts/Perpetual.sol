@@ -269,4 +269,16 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
 
         emit NewReserves(vUSDCreserveNew, vXAUreserveNew);
     }
+
+    function getUSDCvault(address _address) {
+        return USDCvault[_address];
+    }
+
+    function getvXAUlong(address _address) {
+        return vXAUlong[_address];
+    }
+
+    function getvXAUshort(address _address) {
+        return vXAUshort[_address];
+    }
 }
