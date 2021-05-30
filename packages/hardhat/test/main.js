@@ -94,13 +94,24 @@ describe("Perpetual Protocol", function () {
       .withArgs(utils.parseEther("500"), owner.address);
 
     });
+    it("Should retrieve correct", async function () {
+      await usdc.connect(owner).approve(perpetual.address, investAmount);
+      await perpetual.deposit(investAmount);
+
+      await perpetual.MintLongXAU(investAmount);
+      const XAUamount = await perpetual.vXAUlong(owner.address);
+      
+      const vXAUamount = await perpetual.getvXAUlong();
+      console.log("Amount is", utils.formatEther(vXAUamount));
+    });
+    });
     it("Should sell vXAU", async function () {
       price = await perpetual.getPrice();
       expect(price).to.be.to.be.at.least(0)
       //console.log("Current price is", utils.formatEther(price));
-    });
-  });
 
+  });
+  /*
   describe("Can trade calculate funding payments", function () {
     it("Should calculate funding rate", async function () {
       await perpetual.updateFundingRate();
@@ -125,6 +136,9 @@ describe("Perpetual Protocol", function () {
       const amountAfter = await perpetual.vXAUlong(owner.address);
       await expect(amountAfter)
       .to.be.equal(utils.parseEther("0.274013428606965174"));
+
+
     });
   });
+  */
 });        
