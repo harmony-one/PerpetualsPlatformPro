@@ -194,7 +194,7 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
 
     /*********************** funding Rate *****************************/
     // calculate global funding rate
-    /*
+
     function updateFundingRate() public onlyOwner {
         uint256 decimals = 10**8;
         uint256 priceIndex = uint256(getXAUPrice());
@@ -213,54 +213,51 @@ contract Perpetual is Ownable, PriceConsumerV3XAU {
         }
     }
 
-    function _loop_throug_array(
-        uint256 _fundingRate,
-        bool _isPositive,
-        address[] memory holders,
-        mapping(address => uint256) memory balances
-    ) internal {
+    function _applyRateToLongs(uint256 _fundingRate, bool _isPositive)
+        internal
+    {
         uint256 decimals = 10**8;
-
-        for (uint256 i = 0; i < holders.length; i++) {
-            if (_isPositive) {
-                balances[holders[i]] +=
-                    (balances[holders[i]] * _fundingRate) /
+        if (_isPositive) {
+            for (uint256 i = 0; i < vXAUlongHolders.length; i++) {
+                vXAUlong[vXAUlongHolders[i]] +=
+                    (vXAUlong[vXAUlongHolders[i]] * _fundingRate) /
                     decimals;
-            } else {
-                balances[holders[i]] -=
-                    (balances[holders[i]] * _fundingRate) /
+            }
+        } else {
+            for (uint256 i = 0; i < vXAUlongHolders.length; i++) {
+                vXAUlong[vXAUlongHolders[i]] -=
+                    (vXAUlong[vXAUlongHolders[i]] * _fundingRate) /
                     decimals;
             }
         }
     }
 
-    function _applyRateToLongs(uint256 _fundingRate, bool _isPositive)
+    function _applyRateToShorts(uint256 _fundingRate, bool _isPositive)
         internal
     {
-        address[] memory longHolders = vXAUlongHolders;
-        mapping(address => uint256) memory longBalances = vXAUlong;
-        _loop_throug_array(
-            _fundingRate,
-            _isPositive,
-            longHolders,
-            longBalances
-        );
-    }
-
-    function _applyRateToShorts(uint256 _fundingRate, uint256 _isPositive)
-        internal
-    {
-        /*address[] public vXAUshortHolders;
-        mapping(address => uint256) public vXAUshort;
+        uint256 decimals = 10**8;
+        if (_isPositive) {
+            for (uint256 i = 0; i < vXAUshortHolders.length; i++) {
+                vXAUshort[vXAUshortHolders[i]] -=
+                    (vXAUshort[vXAUshortHolders[i]] * _fundingRate) /
+                    decimals;
+            }
+        } else {
+            for (uint256 i = 0; i < vXAUshortHolders.length; i++) {
+                vXAUshort[vXAUshortHolders[i]] -=
+                    (vXAUshort[vXAUshortHolders[i]] * _fundingRate) /
+                    decimals;
+            }
+        }
     }
 
     // apply funding rate to balances in loop (better: create global constant)
-    function applyFundingRate() public view onlyOwner {
+    function applyFundingRate() public onlyOwner {
         Funding memory fundingPayments = funding;
         _applyRateToLongs(fundingPayments.rate, fundingPayments.isPositive);
         _applyRateToShorts(fundingPayments.rate, fundingPayments.isPositive);
     }
-    */
+
     /*********************** helper **********************************/
 
     function _updateBalances(uint256 vUSDCreserveNew, uint256 vXAUreserveNew)

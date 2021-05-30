@@ -24,7 +24,7 @@ describe("Perpetual Protocol", function () {
     usdc = await USDC.connect(owner).deploy(supply);
 
     const Perpetual = await ethers.getContractFactory("Perpetual");
-    perpetual = await Perpetual.deploy(usdc.address, vUSDreserve, vXAUreserve, leverage );
+    perpetual = await Perpetual.connect(owner).deploy(usdc.address, vUSDreserve, vXAUreserve, leverage );
 
   });
 
@@ -36,6 +36,10 @@ describe("Perpetual Protocol", function () {
     it("Should given public variables ", async function () {
       const USDC = await perpetual.USDC();
       expect(USDC).to.be.equal(usdc.address);
+    });
+    it("Should give owner to deployer address ", async function () {
+      const contractOwner = await perpetual.owner();
+      expect(contractOwner).to.be.equal(owner.address);
     });
   });
 
@@ -92,17 +96,35 @@ describe("Perpetual Protocol", function () {
     });
     it("Should sell vXAU", async function () {
       price = await perpetual.getPrice();
-      console.log("Current price is", utils.formatEther(price));
+      expect(price).to.be.to.be.at.least(0)
+      //console.log("Current price is", utils.formatEther(price));
     });
   });
-  /*
+
   describe("Can trade calculate funding payments", function () {
     it("Should calculate funding rate", async function () {
       await perpetual.updateFundingRate();
       const funding = await perpetual.funding();
+      
       expect(funding.rate).to.be.equal(utils.parseUnits("0.00179425", 8));
       expect(funding.isPositive).to.be.true;
+
+    });
+    it("Should apply the funding rate to long balances", async function () {
+      // invest money into balance
+      await usdc.connect(owner).approve(perpetual.address, investAmount);
+      await perpetual.deposit(investAmount);
+      await perpetual.MintLongXAU(investAmount);
+      
+      // update funding rate
+      await perpetual.updateFundingRate();
+
+      // apply funding rate
+      await perpetual.applyFundingRate();
+
+      const amountAfter = await perpetual.vXAUlong(owner.address);
+      await expect(amountAfter)
+      .to.be.equal(utils.parseEther("0.274013428606965174"));
     });
   });
-  */
 });        

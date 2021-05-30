@@ -10,10 +10,13 @@ contract PriceConsumerV3XAU {
      * Aggregator: XAU/USD
      * Address: 0xc8fb5684f2707C82f28595dEaC017Bfdf44EE9c5
      */
-
+    /* Network: Rinkeby
+     * Aggregator: XAU/USD
+     * Address: 0x81570059A0cb83888f1459Ec66Aad1Ac16730243
+     */
     constructor() {
         priceFeed_xau_usd = AggregatorV3Interface(
-            0xc8fb5684f2707C82f28595dEaC017Bfdf44EE9c5
+            0x81570059A0cb83888f1459Ec66Aad1Ac16730243
         );
     }
 
