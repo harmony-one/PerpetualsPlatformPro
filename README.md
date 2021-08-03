@@ -1,6 +1,7 @@
 # Perpetuals Platform Pro 
 
 Hackathon project of the [Web3 Weekend](https://web3.ethglobal.co/)
+* https://showcase.ethglobal.co/web3weekend/perpetuals-platform-pro
 
 
 ---
